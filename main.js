@@ -1,62 +1,63 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { createStore, combineReducers } from 'redux';
+import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
-import storeApp from './reducers/reducers';
+import { Router, Route, browserHistory } from 'react-router';
+import { syncHistory, routeReducer } from 'react-router-redux';
+
+
+//import {createHistory} from 'history';
+import storeReducers from './reducers/reducers';
+
+// Routes
+import Foo from './components/Foo.js';
+import Bar from './components/Bar.js';
+
+
 import App from './app';
+	import Stores from './components/stores/Stores.js';
+		import StoresList from './components/stores/StoresList.js';
+		import StoresUpdate from './components/stores/StoresUpdate.js';
 
-import { Router, Route } from 'react-router'
-import { createHistory } from 'history'
-import { syncReduxAndRouter, routeReducer } from 'redux-simple-router'
-
-
-class AllStores extends React.Component {
-	render() {
-		//console.log('AllStores')
-		return (<div>Foo</div>)
-	}
-}
-
-
-class EditStore extends React.Component {
-	render() {
-		//console.log('EDIT Stores')
-		return (<div>Edit store</div>)
-	}
-}
 
 
 //
 // Combine the routing reducer from redux-router and the stores reducers
 //
 
-//const reducer = combineReducers({
-//	stores: storeApp,
-//	routing: routeReducer
-//});
-//
-//const history = createHistory();
-//const store = createStore(reducer);
-//
-//syncReduxAndRouter(history, store);
+const reducer = combineReducers(Object.assign({}, {
+	routing: routeReducer,
+	stores: storeReducers
+}))
 
-//ReactDOM.render(
-//		<Provider store={store}>
-//			<Router history={history}>
-//				<Route path="/" component={App}>
-//					<Route path="all" component={AllStores}/>
-//					<Route path="edit" component={EditStore}/>
-//				</Route>
-//			</Router>
-//		</Provider>,
-//		document.getElementById('app')
-//)
+// Sync dispatched route actions to the history
+const reduxRouterMiddleware = syncHistory(browserHistory)
+const createStoreWithMiddleware = applyMiddleware(reduxRouterMiddleware)(createStore)
 
-const store = createStore(storeApp);
+const appStateStore = createStoreWithMiddleware(reducer)
+
+
+
+const getStoreState = () => appStateStore.getState();
+
+
+// Required for replaying actions from devtools to work
+reduxRouterMiddleware.listenForReplays(appStateStore)
+
+
 
 ReactDOM.render(
-	<Provider store={store}>
-		<App />
-	</Provider>,
-	document.getElementById('app')
+		<Provider store={appStateStore}>
+			<Router history={browserHistory}>
+				<Route path="/" component={App}>
+					<Route path="stores" component={Stores}>
+						<Route path="list" component={StoresList} />
+						<Route path="update" component={StoresUpdate} />
+					</Route>
+					<Route path="/foo" component={Foo}/>
+					<Route path="/bar" component={Bar}/>
+				</Route>
+			</Router>
+		</Provider>,
+		document.getElementById('app')
 );

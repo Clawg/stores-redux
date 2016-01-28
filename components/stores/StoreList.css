@@ -1,0 +1,21 @@
+:root {
+   --standardLink: red;
+   --rowContrast: lightgrey;
+   --rowBorder: grey;
+}
+
+a {
+   color: var(--standardLink);
+}
+
+.list-group {
+  margin: 0;
+  padding:0;
+  border-top: solid 1px var(--rowBorder);
+
+   li {
+      padding: 5px;
+      border-bottom: solid 1px var(--rowBorder)
+   }
+
+}

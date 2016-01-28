@@ -1,18 +1,44 @@
 import { combineReducers } from 'redux';
-import { ADD_STORE, DELETE_STORE, EDIT_STORE, TOGGLE_STORE } from '../actions/actions';
+import { ADD_STORE, DELETE_STORE, EDIT_STORE, TOGGLE_STORE, ALL_STORES, TOGGLE_ADD_FORM_VISIBILITY } from '../actions/actions';
 import storeObj from '../data/stores-small';
 import deepFreeze from 'deep-freeze';
 import expect, { createSpy, spyOn, isSpy } from 'expect'
-import Immutable from 'immutable'
+import Immutable from 'immutable';
 
 
 const initialState = {
-	stores: storeObj.result
+	stores: storeObj.result,
+	addStoreVisibility: {visible: false}
 };
 
-function stores(state = initialState, action) {
+function storeReducers(state = initialState, action) {
 
 	switch (action.type) {
+
+		case TOGGLE_ADD_FORM_VISIBILITY:
+
+			// ****************************************
+			//  With immutable.js
+			// ****************************************
+
+			const isVisible = Immutable.fromJS(state);
+			const isVisible2 = isVisible.toJSON();
+			isVisible2.addStoreVisibility.visible = action.visibleState;
+			return isVisible2;
+
+			// ****************************************
+			//  Withput immutable.js
+			// ****************************************
+
+			//return Object.assign({}, state, {addStoreVisibility: {visible: action.visibleState}})
+
+			break;
+
+		case ALL_STORES:
+
+			return Object.assign({}, state.stores);
+
+			break;
 
 		case ADD_STORE:
 
@@ -38,6 +64,9 @@ function stores(state = initialState, action) {
 				}
 			);
 
+
+			break;
+
 		case DELETE_STORE:
 
 			//
@@ -48,8 +77,11 @@ function stores(state = initialState, action) {
 					store.id !== action.id
 			);
 
-			return {stores: FilteredObj}
 
+			return Object.assign({}, state, {stores: FilteredObj})
+
+
+			break;
 
 		case TOGGLE_STORE:
 
@@ -108,6 +140,7 @@ function stores(state = initialState, action) {
 
 			*/
 
+			break;
 
 		case EDIT_STORE:
 
@@ -172,6 +205,8 @@ function stores(state = initialState, action) {
 			}
 			*/
 
+			break;
+
 		default:
 			return state
 	}
@@ -181,6 +216,35 @@ function stores(state = initialState, action) {
 // *******************************************************************************************
 // UNIT TESTS USING EXPECT LIB
 // *******************************************************************************************
+
+	// ************************************************************************************
+	// Change the toggle state of the 'add store form', making sure we dont mutate the date
+	// ************************************************************************************
+
+	const testToggleAddStoreForm = () => {
+
+		const toggledTrueState = {stores:[],addStoreVisibility:{visible: true}}
+		const toggledFalseState = {stores:[],addStoreVisibility:{visible: false}}
+
+		const defaultState = {
+			stores: [],
+			addStoreVisibility: {visible: false}
+		};
+
+		deepFreeze(defaultState);
+
+		// Add Toggle to item
+		const showForm = storeReducers(defaultState, {type: 'TOGGLE_ADD_FORM_VISIBILITY', visibleState: true});
+		expect(showForm).toEqual(toggledTrueState);
+
+		const hideForm = storeReducers(defaultState, {type: 'TOGGLE_ADD_FORM_VISIBILITY', visibleState: false});
+		expect(hideForm).toEqual(toggledFalseState);
+
+		const noChangeForm = storeReducers(defaultState, {type: 'TOGGLE_ADD_FORM_VISIBILITY', visibleState: false});
+		expect(noChangeForm).toEqual(toggledFalseState);
+
+	};
+
 
 	// *******************************************************************************************
 	// Add Store
@@ -209,12 +273,12 @@ function stores(state = initialState, action) {
 			deepFreeze(defaultState);
 
 			// Add a 5 item and check the default state too
-			const addItem = stores(defaultState, {type: 'ADD_STORE', store: {address: 'Test street', city: 'Test town', cityId: 666, crmId: 666, distance: null, id: 5, latitude: -42, longitude: 32, name: 'Test store 5', phone: '123456789', postCode: '0000', suburb: 'Testville', suburbId: 666 }});
+			const addItem = storeReducers(defaultState, {type: 'ADD_STORE', store: {address: 'Test street', city: 'Test town', cityId: 666, crmId: 666, distance: null, id: 5, latitude: -42, longitude: 32, name: 'Test store 5', phone: '123456789', postCode: '0000', suburb: 'Testville', suburbId: 666 }});
 			expect(addItem).toEqual(addedItem5);
 			expect(defaultState).toEqual(hasDefaultValue);
 
 			// Add a 6 item and check the default state too
-			const addItem2 = stores(addItem, {type: 'ADD_STORE', store: {address: 'Test street', city: 'Test town', cityId: 666, crmId: 666, distance: null, id: 6, latitude: -42, longitude: 32, name: 'Test store 5', phone: '123456789', postCode: '0000', suburb: 'Testville', suburbId: 666 }});
+			const addItem2 = storeReducers(addItem, {type: 'ADD_STORE', store: {address: 'Test street', city: 'Test town', cityId: 666, crmId: 666, distance: null, id: 6, latitude: -42, longitude: 32, name: 'Test store 5', phone: '123456789', postCode: '0000', suburb: 'Testville', suburbId: 666 }});
 			expect(addItem2).toEqual(addedItem6);
 			expect(defaultState).toEqual(hasDefaultValue);
 
@@ -245,13 +309,13 @@ function stores(state = initialState, action) {
 			deepFreeze(defaultState);
 
 			// Add Toggle to item AND test if its been added and check the default state has not been modified
-			const editItem = stores(defaultState, {type: 'EDIT_STORE', updateItems: {name: 'New shop name 2', id: 2}});
+			const editItem = storeReducers(defaultState, {type: 'EDIT_STORE', updateItems: {name: 'New shop name 2', id: 2}});
 			expect(editItem).toEqual(hasEditName2);
 			expect(defaultState).toEqual(hasDefaultValue);
 
 
 			// Add Toggle to item AND test if its been added and check the default state has not been modified
-			const editItem2 = stores(editItem, {type: 'EDIT_STORE', updateItems: {name: 'New shop name 4', id: 4}});
+			const editItem2 = storeReducers(editItem, {type: 'EDIT_STORE', updateItems: {name: 'New shop name 4', id: 4}});
 			expect(editItem2).toEqual(hasEditName2_4);
 			expect(defaultState).toEqual(hasDefaultValue);
 
@@ -280,13 +344,13 @@ function stores(state = initialState, action) {
 			deepFreeze(defaultState);
 
 			// Add Toggle to item AND test if its been added and check the default state has not been modified
-			const delete2 = stores(defaultState, {type: 'DELETE_STORE', id:2});
+			const delete2 = storeReducers(defaultState, {type: 'DELETE_STORE', id:2});
 			expect(delete2).toEqual(item2Deleted);
 			expect(defaultState).toEqual(hasDefaultValue);
 
 
 			// Add Toggle to item AND test if its been added and check the default state has not been modified
-			const delete4 = stores(delete2, {type: 'DELETE_STORE', id:4});
+			const delete4 = storeReducers(delete2, {type: 'DELETE_STORE', id:4});
 			expect(delete4).toEqual(item2_4Deleted);
 			expect(defaultState).toEqual(hasDefaultValue);
 
@@ -316,17 +380,17 @@ function stores(state = initialState, action) {
 			deepFreeze(defaultState);
 
 			// Add Toggle to item AND test if its been added and check the default state has not been modified
-			const updatedState = stores(defaultState, {type: 'TOGGLE_STORE', id:2});
+			const updatedState = storeReducers(defaultState, {type: 'TOGGLE_STORE', id:2});
 			expect(updatedState).toEqual(hasTrueValue);
 			expect(defaultState).toEqual(hasDefaultValue);
 
 			// Toggle true to false AND test if its been added and check the default state has not been modified
-			const toggleFalse = stores(updatedState, {type: 'TOGGLE_STORE', id:2});
+			const toggleFalse = storeReducers(updatedState, {type: 'TOGGLE_STORE', id:2});
 			expect(toggleFalse).toEqual(hasFalseValue);
 			expect(defaultState).toEqual(hasDefaultValue);
 
 			// Toggle false to true AND test if its been added and check the default state has not been modified
-			const toggleTrue = stores(toggleFalse, {type: 'TOGGLE_STORE', id:2});
+			const toggleTrue = storeReducers(toggleFalse, {type: 'TOGGLE_STORE', id:2});
 			expect(toggleTrue).toEqual(hasTrueValue);
 			expect(defaultState).toEqual(hasDefaultValue);
 
@@ -346,15 +410,15 @@ function stores(state = initialState, action) {
 			deepFreeze(defaultState);
 
 			// Add Toggle to item
-			const addToggle = stores(defaultState, {type: 'TOGGLE_STORE', id:2});
+			const addToggle = storeReducers(defaultState, {type: 'TOGGLE_STORE', id:2});
 			expect(addToggle).toEqual(hasTrueValue);
 
 			// Toggle true to false
-			const toggleFalse = stores(addToggle, {type: 'TOGGLE_STORE', id:2});
+			const toggleFalse = storeReducers(addToggle, {type: 'TOGGLE_STORE', id:2});
 			expect(toggleFalse).toEqual(hasFalseValue);
 
 			// Toggle false to true
-			const toggleTrue = stores(toggleFalse, {type: 'TOGGLE_STORE', id:2});
+			const toggleTrue = storeReducers(toggleFalse, {type: 'TOGGLE_STORE', id:2});
 			expect(toggleTrue).toEqual(hasTrueValue);
 
 			expect(defaultState).toEqual(hasDefaultValue);
@@ -371,7 +435,7 @@ function stores(state = initialState, action) {
 			const defaultState = {stores: testStore.result}
 
 			// Add Toggle to item
-			var changeFalseToggle = stores(defaultState, {type: 'TOGGLE_STORE', id: 2});
+			var changeFalseToggle = storeReducers(defaultState, {type: 'TOGGLE_STORE', id: 2});
 
 			deepFreeze(defaultState);
 
@@ -390,7 +454,7 @@ function stores(state = initialState, action) {
 			const defaultState = {stores: testStore.result}
 
 			// Add Toggle to item
-			var changeTrueToggle = stores(defaultState, {type: 'TOGGLE_STORE', id: 2});
+			var changeTrueToggle = storeReducers(defaultState, {type: 'TOGGLE_STORE', id: 2});
 
 			expect(changeTrueToggle).toEqual(hasFalseValue);
 
@@ -406,10 +470,11 @@ function stores(state = initialState, action) {
 				stores: testStore.result
 			};
 
-			const noAction = stores(defaultState, {type: 'NO_ACTION', id: 2});
+			const noAction = storeReducers(defaultState, {type: 'NO_ACTION', id: 2});
 			expect(noAction).toEqual(hasDefaultValue);
 		};
 
+testToggleAddStoreForm();
 testAddMutations();
 testEditMutations();
 testDeleteMutations();
@@ -421,9 +486,24 @@ testDefaultToggle();
 
 console.log('test passed')
 
+//export default function todos(state = [], action) {
+//	switch (action.type) {
+//		case 'ADD_TODO':
+//			return state.concat([ action.text ])
+//		default:
+//			return state
+//	}
+//}
 
-const storeApp = combineReducers({
-	stores
-});
+//
+//const reducers = combineReducers({
+//	stores,
+//	todos
+//});
 
-export default storeApp;
+
+
+//console.log('reducer')
+//console.log(storeApp)
+export default storeReducers;
+//export default storeApp;

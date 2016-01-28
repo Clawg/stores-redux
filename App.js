@@ -1,55 +1,32 @@
-import React, { Component, PropTypes } from 'react';
-import { connect } from 'react-redux';
-import { addStore, deleteStore, allStores, editStore, toggleStore } from './actions/actions';
-import AddStore from './components/AddStore';
-import StoreList from './components/StoreList';
-import { Router, Route, Link, browserHistory } from 'react-router';
-import { pushPath } from 'redux-simple-router';
+import React from 'react'
+import { Link } from 'react-router'
+import { connect } from 'react-redux'
+import { routeActions } from 'react-router-redux'
 
-
-
-class App extends React.Component {
-
-
-
-	render() {
-
-		// visible stores should be what is displayed in the url
-
-		const { dispatch, visibleStores } = this.props;
-
-		return (
+function App({ push, children }) {
+	return (
+		<div>
+			<header>
+				Links:
+				{' '}
+				<Link to="/">Home</Link>
+				{' '}
+				<Link to="/foo">Foo</Link>
+				{' '}
+				<Link to="/bar">Bar</Link>
+				{' '}
+				<Link to="/stores/list">Stores</Link>
+			</header>
 			<div>
-				{<AddStore onStoreAdd={data => dispatch(addStore(data))} />}
-				{<StoreList
-						storesArray={visibleStores}
-						onStoreDelete={storeId => dispatch(deleteStore(storeId))}
-						onStoreEdit={(storeItemsToUpdate) => dispatch(editStore(storeItemsToUpdate))}
-						onStoreToggle={(storeId) => dispatch(toggleStore(storeId))}/>}
-
-						{/*onStoreEdit={storeId => dispatch(editStore(storeId))}/>*/}
-
+				<button onClick={() => push('/foo')}>Go to /foo</button>
 			</div>
-		)
-	}
-
-
+			<div style={{ marginTop: '1.5em' }}>{children}</div>
+		</div>
+	)
 }
 
-
-// Which props do we want to inject, given the global state?
-// Note: use https://github.com/faassen/reselect for better performance.
-
-function select(state) {
-	return {
-		visibleStores: allStores(state.stores)
-	}
-}
-
-//module.exports = connect(
-//		null,
-//		{ pushPath }
-//)(App);
-
-export default connect(select)(App)
-
+//export default connect()(App)
+export default connect(
+	null,
+	routeActions
+)(App)
