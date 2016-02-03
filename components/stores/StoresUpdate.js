@@ -1,69 +1,131 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Router, Route, Link, browserHistory } from 'react-router';
-import { allStores, toggleAddFormVisibility } from './../../actions/actions';
-import AddStore from './AddStore';
+import AddStoreToggleWithForm from './AddStoreToggleWithForm';
 import StoreListItems from './StoreListItems.js';
-import { addStore,  } from './../../actions/actions';
+import { addStore, editStore, toggleStore, deleteStore, allStores, toggleAddFormVisibility, createNewStore, resetNewStore } from './../../actions/actions';
 
 
-class StoresUpdate extends React.Component {
-
-
-	render() {
-
-		const { dispatch, storeList, formVisible } = this.props;
-
-		console.log(formVisible)
+const StoresUpdate = ({
+	storeList,
+	formVisible,
+	onToggleStoreClick,
+	onDeleteStoreClick,
+	onHandleEditChange,
+	onSubmitStore,
+	toggleAddForm,
+	onAddStoreInputChange,
+	newStore}) => {
 
 		return (
+
 			<div>
 
-				<div>
-					<ul>
-
-						{formVisible.visible ?
-							<li><a href="#" onClick={(e) => {e.preventDefault(); dispatch(toggleAddFormVisibility(false))}}> - </a></li>
-							:
-							<li><a href="#" onClick={(e) => {e.preventDefault(); dispatch(toggleAddFormVisibility(true))}}> + </a></li>
-						}
-					</ul>
-
-					{formVisible.visible ? <AddStore dispatch={dispatch} /> : null}
-
-				</div>
-
+				<AddStoreToggleWithForm
+					storeList={storeList}
+					formVisible={formVisible}
+					newStore={newStore}
+					submitStore={(e) => {e.preventDefault(); onSubmitStore(e, newStore)}}
+					onInputChange={(e) => {e.preventDefault(); onAddStoreInputChange(e)}}
+				    toggleAddForm={(e) => {e.preventDefault(); toggleAddForm(e, formVisible)}}
+				/>
 
 				<ul className="list-group">
 					{storeList.stores.map((store, index) => (
-
 						<StoreListItems
 							key={store.id}
 							storeDetails={store}
 							showEdits={true}
-							dispatch={dispatch}
-							tigerStripe={index % 2 === 0 ? 'even' : 'odd'} />
-
+							tigerStripe={index % 2 === 0 ? 'even' : 'odd'}
+							toggleStore={(e) => {e.preventDefault(); onToggleStoreClick(store.id)}}
+							editStore={(e) => {e.preventDefault(); onHandleEditChange(e, store.id)}}
+							deleteStore={(e) => {e.preventDefault(); onDeleteStoreClick(store.id)}}
+						/>
 					))}
 
 				</ul>
 
 			</div>
 		)
-	}
-
 }
 
 
-function getAllStores(state) {
-
-	console.log(state)
-
+const mapStateToProps = (state) => {
 	return {
 		storeList: allStores(state.stores.stores),
-		formVisible: state.stores.addStoreVisibility
+		formVisible: state.stores.addStoreVisibility,
+		newStore: state.stores.newStore
 	}
 }
 
+const mapDispatchToProps = (dispatch) => {
 
-export default connect(getAllStores)(StoresUpdate)
+	return {
+
+		onToggleStoreClick: (id) => {
+			dispatch(
+				toggleStore(id)
+			);
+		},
+
+		onDeleteStoreClick: (id) => {
+			dispatch(
+				deleteStore(id)
+			)
+		},
+
+		onHandleEditChange: (e, id) => {
+
+			const target  = e.target;
+			const newValue = {
+				id: id
+			};
+
+			newValue[target.name] = target.value;
+
+			dispatch(
+				editStore(newValue)
+			)
+		},
+
+		toggleAddForm: (e, bool) => {
+			console.log(bool)
+			dispatch(
+				toggleAddFormVisibility(bool)
+			)
+		},
+
+		onAddStoreInputChange: (e) => {
+			const target  = e.target;
+			dispatch(createNewStore({k: target.id, v: target.value}));
+		},
+
+		onSubmitStore: (e, store) => {
+			e.preventDefault();
+			const uniqid = Date.now();
+			const newState = store;
+			newState.id = uniqid;
+			dispatch(addStore(newState));
+			dispatch(resetNewStore());
+		}
+
+	};
+
+}
+
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps
+)(StoresUpdate);
+
+
+//function getAllStores(state) {
+//
+//	return {
+//		storeList: allStores(state.stores.stores),
+//		formVisible: state.stores.addStoreVisibility
+//	}
+//}
+//
+//
+//export default connect(getAllStores)(StoresUpdate)

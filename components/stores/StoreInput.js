@@ -1,12 +1,12 @@
 import React from 'react';
 import Radium from 'radium';
 
-const StoreInput = (props) => {
+const StoreInput = ({styles, text, identifier, onChange}) => {
 
 	return (
-		<div style={props.styles.row}>
-			<label htmlFor="name" style={[props.styles.label, props.styles.even]}>{props.text}</label>
-			<input id={props.identifier} name={props.identifier} type={props.identifier} onChange={props.onChange} />
+		<div style={styles.row}>
+			<label htmlFor="name" style={[styles.label, styles.even]}>{text}</label>
+			<input id={identifier} name={identifier} type={identifier} onChange={onChange} />
 		</div>
 	)
 }

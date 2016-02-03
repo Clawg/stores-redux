@@ -1,103 +1,51 @@
 import React from 'react';
-import update from 'react-addons-update';
 import Button from './../Button';
-import { addStore } from './../../actions/actions';
 import StoreInput from './StoreInput.js';
+import randomiseMe from '../../misc.js'
 
+function standardFormInputs() {
 
-
-class AddStore extends React.Component {
-
-	constructor() {
-		super();
-
-		// We have a local state, independent of the redux store state.
-		// This allows us to handle the onchange event and we only update teh redux store onSubmit which
-		// should be when a form is fully valid
-
-		this.state = {
-			name: '',
-			address: '',
-			city: '',
-			suburb: '',
-			postCode: null,
-			phone: '',
-			latitude: null,
-			longitude: null
-		};
-	}
-
-
-
-	handleChange(e) {
-		const target  = e.target;
-		const inputState = {};
-		inputState[target.id] = target.value;
-		this.setState(inputState);
-	}
-
-	handleSubmit(e) {
-		e.preventDefault();
-		const uniqid = Date.now();
-		const newState = this.state;
-		newState.id = uniqid;
-		this.props.dispatch(addStore(newState))
-	}
-
-	randomButtonStyleGenerator() {
-		const buttonClassName = ['primary', 'warning'];
-		const rand = buttonClassName[Math.floor(Math.random() * buttonClassName.length)];
-		return rand;
-	}
-
-	standardFormInputs() {
-
-		const formInputs = [
-			{txt: 'Name', fieldName: 'name'},
-			{txt: 'Address', fieldName: 'address'},
-			{txt: 'City', fieldName: 'city'},
-			{txt: 'Suburb', fieldName: 'suburb'},
-			{txt: 'Postcode', fieldName: 'postCode'},
-			{txt: 'Phone No.', fieldName: 'phone'}
-		]
-
-		return formInputs;
-	}
-
-
-	render() {
-
-
-
-
-		return (
-			<form style={styles.addStoreForm} onSubmit={(e) => this.handleSubmit(e)}>
-
-				{this.standardFormInputs().map((value, index) => (
-
-					<StoreInput key={index}
-					            text={value.txt}
-					            identifier={value.fieldName}
-					            onChange={(e) => this.handleChange(e)}
-					            styles={styles} />
-
-				))}
-
-
-				<div style={styles.row}>
-					<label htmlFor="latitude" style={styles.label}>Location</label>
-					<div style={styles.inlineBlocked}>
-						<input id="latitude" name="latitude" type="text" onChange={(e) => this.handleChange(e)} placeholder="latitude" style={styles.smallInput} />
-						<input id="longitude" name="longitude" type="text" onChange={(e) => this.handleChange(e)} placeholder="longitude"  style={styles.smallInput} />
-					</div>
-				</div>
-
-				<Button kind={this.randomButtonStyleGenerator()}>Submit</Button>
-
-			</form>
-		)
-	}
+	return [
+		{txt: 'Name', fieldName: 'name'},
+		{txt: 'Address', fieldName: 'address'},
+		{txt: 'City', fieldName: 'city'},
+		{txt: 'Suburb', fieldName: 'suburb'},
+		{txt: 'Postcode', fieldName: 'postCode'},
+		{txt: 'Phone No.', fieldName: 'phone'}
+	]
 }
+
+const AddStore = ({ onInputChange, submitStore }) => {
+
+	return (
+
+		<form style={styles.addStoreForm} onSubmit={submitStore}>
+
+			{standardFormInputs().map((value, index) => (
+
+				<StoreInput key={index}
+				            text={value.txt}
+				            identifier={value.fieldName}
+				            onChange={onInputChange}
+				            styles={styles} />
+
+			))}
+
+			<div style={styles.row}>
+				<label htmlFor="latitude" style={styles.label}>Location</label>
+				<div style={styles.inlineBlocked}>
+					<input id="latitude" name="latitude" type="text" onChange={onInputChange} placeholder="latitude" style={styles.smallInput} />
+					<input id="longitude" name="longitude" type="text" onChange={onInputChange} placeholder="longitude"  style={styles.smallInput} />
+				</div>
+			</div>
+
+			<Button kind={randomiseMe(['primary', 'warning'])}>Submit</Button>
+
+		</form>
+	)
+
+
+};
 
 AddStore.propTypes = {
 	name: React.PropTypes.string.isRequired,
@@ -151,7 +99,6 @@ var styles = {
 	}
 }
 
-//export default Radium(AddStore);
 export default AddStore;
 
 

@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import StoreHeader from './StoreHeader';
 
-const Stores = (props) => {
+const Stores = ({children}) => {
 	return (
 		<div>
 			<StoreHeader />
-			{props.children}
+			{children}
 		</div>
 	)
 }

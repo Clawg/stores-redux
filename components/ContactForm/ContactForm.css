@@ -1,0 +1,254 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    color: #000;
+}
+
+.contact-form {
+
+    width: 300px;
+    outline: solid 1px #ccc;
+    margin: 0 auto;
+
+    .row {
+        border: solid 1px #f5f5f5;
+        padding: 10px;
+        width: 100%;
+    }
+
+
+    .row-block {
+        border: solid 1px #f5f5f5;
+    }
+    .row-block .row {
+        border: none;
+    }
+
+    .row-error,
+    .select-block-error {
+
+        select,
+        input[type=email],
+        input[type=text],
+        input[type=password] {
+
+            border: solid 1px #ff7700;
+            background-color: #ffeac8;
+
+            &::placeholder {
+                color: #ff7700;
+            }
+        }
+
+    }
+
+
+    .fake-label {
+        padding: 10px;
+        font-size: 16px;
+    }
+
+    .description-txt {
+        font-size: 14px;
+        padding: 0 10px;
+    }
+
+
+    .fakeinput,
+    input[type=email],
+    input[type=password],
+    input[type=text],
+    select {
+        width: 100%;
+        font-size: 16px;
+        padding: 5px;
+    }
+
+    .inline-label {
+        width: auto;
+    }
+
+    .error {
+        padding-top: 5px;
+        color: #ff7700;
+        font-size: 14px;
+    }
+
+    .cleft {
+        clear: left
+    }
+
+    .hide {
+        position: absolute !important;
+        clip: rect(1px, 1px, 1px, 1px);
+    }
+
+
+    .select-block {
+        width: 30%;
+        display: inline-block;
+        margin-left: 5%;
+
+        select {
+            width: 100%
+        }
+    }
+
+    .select-block:first-child {
+        margin-left: 0
+    }
+
+
+    .input-helper-text {
+        font-size: 12px;
+        padding-top: 5px
+    }
+
+    /*
+    .passwordField {
+        width: 100%;
+        border: solid 1px #ccc;
+        input {
+            width:80%
+        }
+    }
+
+    .password-row-error .passwordField {
+        border: solid 1px #ff7700;
+        background-color: #ffeac8;
+        color: #000;
+
+        input {
+            background-color: #ffeac8;
+        }
+    }
+
+    .passwordField__input {
+        border: none;
+        height: 32px !important;
+    }
+
+    .passwordField__info {
+        position: relative !important;
+        bottom: auto  !important;
+        float: right;
+        width: 20% !important;
+        height: 32px !important;
+
+        border: none;
+    }
+
+    .passwordField__meter,
+    .passwordField__icon {
+        display: none !important;
+    }
+
+    .passwordField__strength {
+        display: block !important;
+        top: 0 !important;
+        line-height: 32px;
+        font-size: 16px !important;
+        text-align: center;
+    }
+
+
+    .password-strength-0 .passwordField__strength {
+        background-color: orange;
+    }
+
+    .password-strength-1 .passwordField__strength {
+        background-color: yellow;
+    }
+
+    .password-strength-2 .passwordField__strength {
+        background-color: purple;
+        color: #fff
+    }
+
+    .password-strength-3 .passwordField__strength {
+        background-color: blue;
+        color: #fff
+    }
+
+    .password-strength-4 .passwordField__strength {
+        background-color: green;
+        color: #fff
+    }*/
+
+
+
+    .check-radio-fakelabel {
+        color: #666;
+        display: inline-block;
+        font-size: 14px;
+        margin-left: 10px;
+    }
+
+
+    .password-row div:first-child {
+        border: solid 1px red;
+        overflow: hidden;
+        border: solid 1px #ccc;
+
+        input {
+            background-color:
+        }
+    }
+
+    .password-row-error div:first-child {
+        border: solid 1px #ff7700;
+        background-color: #ffeac8;
+        color: #000;
+    }
+
+    .password-row input[type=password] {
+        float:left;
+        width: 80%;
+        border: none;
+        height: 32px;
+
+    }
+
+    .password-row #password-strength-meter {
+        overflow:hidden;
+        border-left: solid 1px #ccc;
+        height: 32px;
+    }
+
+    .password-row #password-strength-text {
+        clear: left;
+        text-align: right;
+    }
+
+    .input-helper-text {
+        clear: left;
+    }
+
+
+    .password-row-error .password-meter-wrapper {
+        border: solid 3px red;
+        overflow: hidden;
+    }
+
+    #password-strength-meter {
+        /*background-image: url('./img/faces.png') 0 0 no-repeat;*/
+    }
+    .strength-0 #password-strength-meter {
+        background-color: #f00;
+    }
+    .strength-1 #password-strength-meter {
+        background-color: #f60;
+    }
+    .strength-2 #password-strength-meter {
+        background-color: #ff0;
+    }
+    .strength-3 #password-strength-meter {
+        background-color: #0f0;
+    }
+    .strength-4 #password-strength-meter {
+        background-color: yellow;
+    }
+
+
+}

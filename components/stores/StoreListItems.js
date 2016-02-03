@@ -1,6 +1,5 @@
 import React from 'react';
 import StoreEditForm from './StoreUpdateForm.js';
-import { deleteStore, toggleStore } from './../../actions/actions';
 
 var styles = {
 	even: {
@@ -11,27 +10,30 @@ var styles = {
 	}
 }
 
-const StoreListItems = (props) => {
-	
-		return (
-			<li style={styles[props.tigerStripe]}>
-				{props.storeDetails.toggle ?
+const StoreListItems = ({storeDetails, toggleStore, tigerStripe, showEdits, editStore, deleteStore}) => {
 
-					<StoreEditForm
-						storeDetails={props.storeDetails}
-						dispatch={props.dispatch}/>
+	return (
+		<li style={styles[tigerStripe]}>
 
-					:
+			{storeDetails.toggle ?
 
-					<div>{props.storeDetails.name}, {props.storeDetails.address}
-						{props.showEdits ?
-							<span>
-								<a href="#" onClick={(e) => {e.preventDefault(); props.dispatch(toggleStore(props.storeDetails.id))}}>Edit</a>
-								<a href="#" onClick={(e) => {e.preventDefault(); props.dispatch(deleteStore(props.storeDetails.id))}}>X</a>
-							</span> : null}
-					</div>}
-			</li>
-		)
+				<StoreEditForm
+		            storeDetails={storeDetails}
+		            toggleStore={toggleStore}
+					editStore={editStore}
+		            />
+		    :
+
+		    <div>{storeDetails.name}, {storeDetails.address}
+		        {showEdits ?
+		            <span>
+		                <a href="#" onClick={toggleStore}>Edit me</a>
+			            <a href="#" onClick={deleteStore}>X</a>
+		            </span> : null}
+		    </div>}
+
+		 </li>
+	)
 
 };
 
